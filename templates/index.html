@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Smart Yatra</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f9ff;
+      color: #111;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px 48px;
+      background-color: #0d47a1;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .logo {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: white;
+    }
+
+    .nav-links {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .toggle-btn {
+      font-size: 1.2rem;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      margin-left: 20px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 60px 60px 100px;
+      justify-content: space-between;
+      gap: 40px;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    .left {
+      flex: 1;
+      min-width: 420px;
+    }
+
+    .left h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+
+    .promo {
+      font-size: 1.1rem;
+      margin: 15px 0 30px;
+      color: #333;
+    }
+
+    .form-box {
+      background-color: #f4f4f4;
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-box input {
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+
+    .form-box button {
+      background-color: #000;
+      color: #fff;
+      padding: 14px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .form-box button:hover {
+      background-color: #222;
+    }
+
+    .right {
+      flex: 1;
+      min-width: 400px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 25px;
+      padding: 10px 10px 0;
+    }
+
+    .quote {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      padding: 20px 22px;
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+      transition: all 0.3s ease;
+    }
+
+    .quote:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .quote i {
+      font-size: 2rem;
+      margin-right: 20px;
+      color: #007aff;
+    }
+
+    .quote span {
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: #333;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      color: #888;
+      font-size: 0.9rem;
+    }
+
+    @media screen and (max-width: 900px) {
+      .container {
+        flex-direction: column;
+        padding: 30px;
+      }
+
+      .left h1 {
+        font-size: 2.5rem;
+      }
+
+      .right {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+
+    .dark-mode body {
+      background-color: #121212;
+      color: #eee;
+    }
+
+    .dark-mode nav {
+      background-color: #1f1f1f;
+    }
+
+    .dark-mode .logo,
+    .dark-mode .nav-links,
+    .dark-mode .toggle-btn {
+      color: #fff;
+    }
+
+    .dark-mode .form-box {
+      background-color: #2c2c2c;
+    }
+
+    .dark-mode .form-box input {
+      background-color: #444;
+      color: #fff;
+    }
+
+    .dark-mode .form-box button {
+      background-color: #333;
+      color: #fff;
+    }
+
+    .dark-mode .quote {
+      background-color: #2b2b2b;
+    }
+
+    .dark-mode .quote span {
+      color: #eee;
+    }
+
+    .dark-mode footer {
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">Smart Yatra</div>
+    <div class="nav-links">
+      Compare fares, book smarter
+      <button id="toggleTheme" class="toggle-btn" title="Toggle dark mode">🌙</button>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <div class="left">
+      <h1>Request a ride<br>and compare fares</h1>
+      <p class="promo">
+        <i class="fa-solid fa-tag" style="color:green;"></i>
+        <strong>Compare Ride Prices Instantly</strong>
+      </p>
+      <form method="POST" class="form-box">
+        <input type="text" name="pickup" placeholder="Enter pickup location" required>
+        <input type="text" name="drop" placeholder="Enter destination" required>
+        <button type="submit">See prices</button>
+      </form>
+    </div>
+
+
+    <div class="right">
+      <div class="quote">
+        <i class="fa-solid fa-taxi"></i>
+        <span>Get the lowest budget taxi on your fingertips</span>
+      </div>
+      <div class="quote">
+        <i class="fa-solid fa-wallet"></i>
+        <span>Pay less. Ride more. Compare with ease.</span>
+      </div>
+      <div class="quote">
+        <i class="fa-solid fa-car-side"></i>
+        <span>Smart routing helps you reach faster & cheaper</span>
+      </div>
+      <div class="quote">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Real-time fare analysis from top platforms</span>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Smart Yatra. All rights reserved.
+  </footer>
+
+  <script>
+    const toggle = document.getElementById('toggleTheme');
+    const root = document.documentElement;
+
+    toggle.addEventListener('click', () => {
+      root.classList.toggle('dark-mode');
+      const isDark = root.classList.contains('dark-mode');
+      toggle.textContent = isDark ? '☀️' : '🌙';
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const storedTheme = localStorage.getItem('theme');
+      if (storedTheme === 'dark') {
+        root.classList.add('dark-mode');
+        toggle.textContent = '☀️';
+      }
+    });
+  </script>
+
+</body>
+</html>

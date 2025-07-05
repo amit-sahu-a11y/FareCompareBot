@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fare Comparison Result</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f0f4ff, #f6fcff);
+      color: #222;
+    }
+
+    nav {
+      background-color: #0d47a1;
+      color: white;
+      padding: 20px 40px;
+      font-size: 28px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .toggle-btn {
+      font-size: 1.4rem;
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 40px;
+      gap: 30px;
+      justify-content: space-between;
+    }
+
+    .left {
+      flex: 1;
+      min-width: 400px;
+      padding: 30px;
+      background-color: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      animation: slideInLeft 0.6s ease-out;
+    }
+
+    .left h2 {
+      font-size: 36px;
+      margin-bottom: 30px;
+      color: #1a237e;
+    }
+
+    .left p {
+      font-size: 22px;
+      margin: 15px 0;
+      line-height: 1.5;
+    }
+
+    .best {
+      background: #e8ffe8;
+      padding: 20px;
+      border-left: 6px solid #2e7d32;
+      border-radius: 12px;
+      font-size: 22px;
+      font-weight: 600;
+      margin-top: 25px;
+      color: #2e7d32;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .left button {
+      margin-top: 25px;
+      padding: 14px 28px;
+      font-size: 18px;
+      border: none;
+      background-color: #0d47a1;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-right: 15px;
+    }
+
+    .left button:hover {
+      background-color: #08306b;
+    }
+
+    .right {
+      flex: 1;
+      min-width: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .chart-box {
+      width: 100%;
+      max-width: 500px;
+      height: 380px;
+      padding: 20px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    canvas {
+      max-width: 100% !important;
+      max-height: 340px !important;
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .dark-mode body {
+      background: linear-gradient(to right, #121212, #1e1e1e);
+      color: #eee;
+    }
+
+    .dark-mode nav {
+      background-color: #1e1e1e;
+    }
+
+    .dark-mode .left {
+      background-color: #2a2a2a;
+      color: #ddd;
+    }
+
+    .dark-mode .left h2 {
+      color: #90caf9;
+    }
+
+    .dark-mode .best {
+      background: #1b5e20;
+      color: #c8facc;
+    }
+
+    .dark-mode .left button {
+      background-color: #1565c0;
+    }
+
+    .dark-mode .chart-box {
+      background: #2b2b2b;
+    }
+
+    .dark-mode .toggle-btn {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div>Smart Yatra</div>
+    <button class="toggle-btn" id="modeToggle" title="Toggle dark mode">🌙</button>
+  </nav>
+
+  <div class="container">
+
+    <div class="left">
+      <h2>🚖 Fare Comparison Result</h2>
+
+      <p>📍 <strong>Pickup:</strong> {{ result.pickup }}</p>
+      <p>🏁 <strong>Drop:</strong> {{ result.drop }}</p>
+      <p>🚕 <strong>Rapido:</strong> {{ result.rapido_cab_premium }}</p>
+      <p>🚖 <strong>GoByTaxi:</strong> ₹{{ result.gobytaxi }}</p>
+      <p>⏰ <strong>Checked:</strong> {{ result.timestamp }}</p>
+
+      <div class="best">
+        ✅ Best Option: {{ result.best_option }}
+      </div>
+
+      {% if result.book_url %}
+        <a href="{{ result.book_url }}" target="_blank">
+          <button>Book Now</button>
+        </a>
+      {% endif %}
+
+      <a href="/">
+        <button>Compare Again</button>
+      </a>
+    </div>
+
+    <!-- Right Chart Section -->
+    <div class="right">
+      <div class="chart-box">
+        <canvas id="farePieChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <canvas id="fareBarChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const rapido = parseInt("{{ result.rapido_cab_premium|replace('₹','')|replace(',','') }}");
+    const goby = parseInt("{{ result.gobytaxi|replace('₹','')|replace(',','') }}");
+
+    const pieCtx = document.getElementById('farePieChart').getContext('2d');
+    const barCtx = document.getElementById('fareBarChart').getContext('2d');
+
+    const pieChart = new Chart(pieCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Rapido', 'GoByTaxi'],
+        datasets: [{
+          data: [rapido, goby],
+          backgroundColor: ['#00c853', '#1e88e5'],
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { font: { size: 16 }, color: '#333' }
+          },
+          title: {
+            display: true,
+            text: 'Fare Share (%)',
+            font: { size: 20, weight: 'bold' },
+            color: '#333'
+          }
+        }
+      }
+    });
+
+    const barChart = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Rapido', 'GoByTaxi'],
+        datasets: [{
+          label: 'Fare in ₹',
+          data: [rapido, goby],
+          backgroundColor: ['#00c853', '#1e88e5'],
+          borderRadius: 10
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { font: { size: 14 }, color: '#444' }
+          },
+          x: {
+            ticks: { font: { size: 16 }, color: '#444' }
+          }
+        },
+        plugins: {
+          title: {
+            display: true,
+            text: 'Absolute Fare Comparison',
+            font: { size: 20, weight: 'bold' },
+            color: '#333'
+          },
+          legend: { display: false }
+        }
+      }
+    });
+
+    // DARK MODE TOGGLE
+    const toggleBtn = document.getElementById("modeToggle");
+
+    toggleBtn.addEventListener("click", () => {
+      document.documentElement.classList.toggle("dark-mode");
+
+      toggleBtn.textContent = document.documentElement.classList.contains("dark-mode") ? "☀️" : "🌙";
+
+      const isDark = document.documentElement.classList.contains("dark-mode");
+      updateChartColors(isDark);
+    });
+
+    function updateChartColors(isDark) {
+      const labelColor = isDark ? '#eee' : '#333';
+      const gridColor = isDark ? '#444' : '#ccc';
+
+      pieChart.options.plugins.title.color = labelColor;
+      pieChart.options.plugins.legend.labels.color = labelColor;
+      pieChart.update();
+
+      barChart.options.plugins.title.color = labelColor;
+      barChart.options.scales.x.ticks.color = labelColor;
+      barChart.options.scales.y.ticks.color = labelColor;
+      barChart.update();
+    }
+  </script>
+
+</body>
+</html>
